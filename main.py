@@ -190,8 +190,10 @@ def evaluate_model():
 
 
 
+# Always create DB and table on app start (even in production)
+create_db_and_table()
 
 if __name__ == '__main__':
-    create_db_and_table()
-    app.run(debug=True)
+    app.run()
+
 
