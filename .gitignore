@@ -1,0 +1,4 @@
+.en
+mlop/Lib/site-packages/tensorflow/python/_pywrap_tensorflow_internal.pyd
+mlop/Lib/site-packages/lance/lance.pyd
+mlop/Lib/site-packages/clang/native/libclang.dll

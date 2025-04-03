@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f8;
+        }
+        .card {
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        footer {
+            background-color: #343a40;
+            padding: 1rem 0;
+            text-align: center;
+            color: #fff;
+            margin-top: 3rem;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .btn {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container">
+            <a class="navbar-brand" href="#">Heart Disease Detector</a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="text-center mb-5 text-primary">Interactive Machine Learning Dashboard</h1>
+
+        <div class="card shadow-lg mb-5">
+          
+            <div class="card-body">
+                <p>This Heart Disease Prediction Web App is a data-driven tool designed to assess the risk of heart disease based on key medical attributes such as age, cholesterol level, and blood pressure. Users can input patient-specific data to receive real-time predictions powered by a trained machine learning model, along with a confidence score. In addition to making predictions, the app allows users to upload new datasets, evaluate the model’s performance on these datasets, and retrain and save improved versions of the model—enabling continuous learning and increased accuracy over time. </p>
+            </div>
+        </div>
+
+        <!-- Model Prediction -->
+<div class="card mb-4 shadow-lg">
+    <div class="card-header bg-primary text-white section-title">
+        <i class="fas fa-magic me-2"></i>Model Prediction
+    </div>
+    <div class="card-body">
+        <p>This section allows you to input patient features and receive a prediction from the current model.</p>
+        <form id="predict-form">
+            <!-- Input for all 13 features -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="number" class="form-control" id="age" name="age" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="sex" class="form-label">Sex (1=Male, 0=Female)</label>
+                    <input type="number" class="form-control" id="sex" name="sex" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="cp" class="form-label">Chest Pain Type (cp)</label>
+                    <input type="number" class="form-control" id="cp" name="cp" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="trestbps" class="form-label">Resting BP (trestbps)</label>
+                    <input type="number" class="form-control" id="trestbps" name="trestbps" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="chol" class="form-label">Cholesterol</label>
+                    <input type="number" class="form-control" id="chol" name="chol" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="fbs" class="form-label">Fasting Blood Sugar (fbs 0-1)</label>
+                    <input type="number" class="form-control" id="fbs" name="fbs" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="restecg" class="form-label">Resting ECG(0-2)</label>
+                    <input type="number" class="form-control" id="restecg" name="restecg" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="thalach" class="form-label">Max Heart Rate (thalach)</label>
+                    <input type="number" class="form-control" id="thalach" name="thalach" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="exang" class="form-label">Exercise Induced Angina (exang 0-1)</label>
+                    <input type="number" class="form-control" id="exang" name="exang" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="oldpeak" class="form-label">ST Depression (oldpeak)</label>
+                    <input type="number" class="form-control" id="oldpeak" name="oldpeak" step="any" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="slope" class="form-label">Slope of ST (slope 0-2)</label>
+                    <input type="number" class="form-control" id="slope" name="slope" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="ca" class="form-label">Major Vessels Colored (ca)</label>
+                    <input type="number" class="form-control" id="ca" name="ca" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="thal" class="form-label">Thalassemia (thal)</label>
+                    <input type="number" class="form-control" id="thal" name="thal" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success mt-3">
+                <i class="fas fa-chart-line me-1"></i> Predict
+            </button>
+        </form>
+
+        <div id="prediction-result" class="alert alert-info mt-3" role="alert" style="display: none;"></div>
+    </div>
+</div>
+
+
+        <!-- Visualizations -->
+<div class="card mb-4 shadow-lg">
+    <div class="card-header bg-info text-white section-title"><i class="fas fa-chart-bar me-2"></i>Visualizations</div>
+        <div class="card-body">
+            <p>This section provides visual insights into the most important features of your dataset. Use these plots to understand trends and patterns that influence model decisions.</p>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <img src="/static/img/confusion_matrix.png" class="img-fluid rounded shadow-sm" alt="Feature 1">
+                    <p class="mt-2">Confusion_matrix</p>
+                </div>
+                <div class="col-md-4">
+                    <img src="/static/img/accuracy_curve.png" class="img-fluid rounded shadow-sm" alt="Feature 2">
+                    <p class="mt-2">Accuracy_curve</p>
+                </div>
+                <div class="col-md-4">
+                    <img src="/static/img/loss_curve.png" class="img-fluid rounded shadow-sm" alt="Feature 3">
+                    <p class="mt-2">Loss_curve</p>
+                </div>
+            </div>
+    </div>
+</div>
+
+       <!-- Upload Data -->
+<div class="card mb-4 shadow-lg">
+    <div class="card-header bg-warning section-title">
+        <i class="fas fa-upload me-2"></i>Upload Data
+    </div>
+    <div class="card-body">
+        <p>Upload a  CSV files to prepare them for model retraining. This helps keep the model updated and adaptive.</p>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="data-file" class="form-label mt-5">Upload CSV files</label>
+                <input type="file" class="form-control" id="data-file" name="file" accept=".csv" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-5">
+                <i class="fas fa-file-upload me-1"></i> Upload
+            </button>
+        </form>
+        <div id="upload-result" class="alert alert-secondary mt-3" role="alert" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- Recently Uploaded Rows -->
+<div class="card mb-4 shadow">
+    <div class="card-header bg-info text-white section-title">
+        <i class="fas fa-database me-2"></i>Last 15 Uploaded Rows
+    </div>
+    <div class="card-body">
+        <p><strong>Total rows in database:</strong> <span id="row-count">Loading...</span></p>
+        <div id="data-preview" class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead id="table-head"></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+        <!-- Retrain Model -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-danger text-white section-title"><i class="fas fa-sync-alt me-2"></i>Trigger Model Retraining</div>
+                <div class="card-body m">
+                    <p>Click the button below to initiate a retraining process using the latest uploaded dataset. This updates the model to improve performance based on new data.</p>
+                    <button class="btn btn-danger mt-5" id="retrain-btn"><i class="fas fa-redo me-1"></i> Retrain Model</button>
+                    <button class="btn btn-success mt-5" id="evaluate-btn"><i class="fas  me-1"></i> Evaluate</button>
+                    <div id="retrain-status" class="alert alert-warning mt-3" role="alert" style="display: none;"></div>
+                    <button id="save-model-btn" class="btn btn-success mt-3" style="display: none;">
+                        <i class="fas fa-save me-1"></i> Save Retrained Model
+                    </button>
+                    
+                    <button id="cancel-save-btn" class="btn btn-secondary mt-3" style="display: none;">
+                        <i class="fas fa-times me-1"></i> Don't Save Model
+                    </button>
+                    
+                    
+                </div>
+            </div>
+        </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p class="mb-0">&copy; 2025 <strong>Dashboard</strong>. Built with Flask.</p>
+        </div>
+    </footer>
+
+    <script>
+      document.getElementById('upload-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById('data-file');
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file); 
+
+    const resultDiv = document.getElementById('upload-result');
+    resultDiv.style.display = 'block';
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json().then(data => ({
+        status: response.status,
+        ok: response.ok,
+        body: data
+    })))
+    .then(({ status, ok, body }) => {
+        if (ok) {
+            resultDiv.classList.remove('alert-danger');
+            resultDiv.classList.add('alert-success');
+            resultDiv.textContent = body.message || 'Upload successful!';
+            loadLastRows(); // refresh preview
+            fileInput.value = '';
+        } else {
+            resultDiv.classList.remove('alert-success');
+            resultDiv.classList.add('alert-danger');
+            resultDiv.textContent = body.error || 'Upload failed. (Server error)';
+        }
+    })
+    .catch(error => {
+    const resultDiv = document.getElementById('upload-result');
+    resultDiv.style.display = 'block';
+    resultDiv.classList.remove('alert-success');
+    resultDiv.classList.add('alert-danger');
+    resultDiv.textContent = 'Upload failed. Please try again.';
+    console.error('Upload error:', error);  
+});
+
+});
+
+
+document.getElementById('retrain-btn').addEventListener('click', async () => {
+    const statusDiv = document.getElementById('retrain-status');
+    statusDiv.style.display = 'block';
+    statusDiv.className = 'alert alert-info mt-3';
+    statusDiv.textContent = '⏳ Retraining model... Please wait.';
+
+    try {
+        const response = await fetch('/retrain-model', {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            const plotUrl = result.confusion_plot || '/static/img/confusion_matrix.png';
+
+            document.getElementById('save-model-btn').style.display = 'inline-block';
+            document.getElementById('cancel-save-btn').style.display = 'inline-block';
+
+            window.lastTrainingHistory = {
+                loss: result.metrics.loss_history ?? [],
+                val_loss: result.metrics.val_loss_history ?? [],
+                accuracy: result.metrics.accuracy_history ?? [],
+                val_accuracy: result.metrics.val_accuracy_history ?? []
+            };
+
+            statusDiv.className = 'alert alert-success mt-3';
+            statusDiv.innerHTML = `
+                ✅ ${result.message}<br>
+                🔢 Accuracy: ${result.metrics.accuracy}<br>
+                🎯 F1 Score: ${result.metrics.f1_score}<br>
+                📈 Precision: ${result.metrics.precision}<br>
+                📉 Recall: ${result.metrics.recall}<br>
+                📉 Loss: ${result.metrics.loss ?? "N/A"}<br>
+                <hr>
+                <strong>Confusion Matrix:</strong><br>
+                <img src="${plotUrl}" alt="Confusion Matrix" class="img-fluid mt-2 border rounded shadow">
+            `;
+        } else {
+            statusDiv.className = 'alert alert-danger mt-3';
+            statusDiv.textContent = result.error || 'Something went wrong.';
+        }
+    } catch (error) {
+        statusDiv.className = 'alert alert-danger mt-3';
+        statusDiv.textContent = 'Request failed: ' + error.message;
+    }
+});
+
+//Save model button logic
+document.getElementById('save-model-btn').addEventListener('click', async () => {
+    const saveBtn = document.getElementById('save-model-btn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+
+    try {
+        const response = await fetch('/save-model', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                history: window.lastTrainingHistory || null
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+        } else {
+            alert(result.error || 'Failed to save model.');
+        }
+    } catch (error) {
+        alert('Save failed: ' + error.message);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Retrained Model';
+        document.getElementById('cancel-save-btn').style.display = 'none';
+        document.getElementById('save-model-btn').style.display = 'none';
+    }
+});
+
+// Cancel save button logic
+document.getElementById('cancel-save-btn').addEventListener('click', () => {
+    document.getElementById('cancel-save-btn').style.display = 'none';
+    document.getElementById('save-model-btn').style.display = 'none';
+    document.getElementById('retrain-status').innerHTML += '<br><strong>❌ Model was not saved.</strong>';
+});
+
+document.getElementById('evaluate-btn').addEventListener('click', async () => {
+    const statusDiv = document.getElementById('retrain-status');
+
+    statusDiv.style.display = 'block';
+    statusDiv.className = 'alert alert-info mt-3';
+    statusDiv.textContent = '⏳ Loading saved evaluation metrics...';
+
+    try {
+        const response = await fetch('/evaluate-model', {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            const metrics = result.metrics;
+            const plotUrl = result.confusion_plot;
+
+            statusDiv.className = 'alert alert-primary mt-3';
+            statusDiv.innerHTML = `
+                📊 <strong>Saved Model Evaluation:</strong><br>
+                🔢 Accuracy: ${metrics.accuracy}<br>
+                🎯 F1 Score: ${metrics.f1_score}<br>
+                📈 Precision: ${metrics.precision}<br>
+                📉 Recall: ${metrics.recall}<br>
+                <hr>
+                <strong>Confusion Matrix:</strong><br>
+                <img src="${plotUrl}" alt="Confusion Matrix" class="img-fluid mt-2 border rounded shadow">
+            `;
+        } else {
+            statusDiv.className = 'alert alert-danger mt-3';
+            statusDiv.textContent = result.error || 'No evaluation metrics found.';
+        }
+    } catch (error) {
+        statusDiv.className = 'alert alert-danger mt-3';
+        statusDiv.textContent = 'Request failed: ' + error.message;
+    }
+});
+
+document.getElementById('predict-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {};
+
+        formData.forEach((value, key) => {
+            data[key] = parseFloat(value); // Convert all to numbers
+        });
+
+        const resultDiv = document.getElementById('prediction-result');
+        resultDiv.style.display = 'none';
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                resultDiv.className = 'alert alert-danger mt-3';
+                resultDiv.innerText = 'Error: ' + result.error;
+            } else {
+                resultDiv.className = result.prediction === 1 
+                    ? 'alert alert-danger mt-3'
+                    : 'alert alert-success mt-3';
+
+                resultDiv.innerHTML = `
+                    <strong>Prediction:</strong> ${result.prediction === 1 ? 'High Risk' : 'Low Risk'}<br>
+                    <strong>Confidence:</strong> ${result.confidence.toFixed(2)}
+                `;
+            }
+
+            resultDiv.style.display = 'block';
+        } catch (err) {
+            resultDiv.className = 'alert alert-danger mt-3';
+            resultDiv.innerText = 'An unexpected error occurred: ' + err;
+            resultDiv.style.display = 'block';
+        }
+    });
+
+
+async function loadLastRows() {
+    const res = await fetch('/last-rows');
+    const data = await res.json();
+
+    const tableHead = document.getElementById('table-head');
+    const tableBody = document.getElementById('table-body');
+    const rowCountElement = document.getElementById('row-count');
+
+    if (data.error) {
+        tableBody.innerHTML = `<tr><td colspan="100%">Error: ${data.error}</td></tr>`;
+        rowCountElement.textContent = 'Error';
+        return;
+    }
+
+    const rows = data.rows;
+    const headers = data.columns;  
+    rowCountElement.textContent = data.count;
+
+    if (rows.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="100%">No data available</td></tr>';
+        return;
+    }
+
+    tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+    tableBody.innerHTML = rows.map(row => {
+        return `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`;
+    }).join('');
+}
+
+// Load last rows on page load
+window.onload = loadLastRows;
+
+
+
+    </script>
+
+   
+</body>
+</html>
