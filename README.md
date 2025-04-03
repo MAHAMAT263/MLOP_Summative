@@ -9,7 +9,7 @@ This project is a Flask-based web application that predicts the risk of heart di
 👉 [View the deployed app on Render] https://mlop-summative-frxm.onrender.com/
 
 
-👉 [The video demo] https://your-app-name.onrender.com
+👉 [The video demo] https://drive.google.com/file/d/1L4ZV4tlrEsNnrDCLymxNgJvWMGlOIHXN/view?usp=sharing
 
 
 
