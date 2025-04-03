@@ -17,7 +17,7 @@ import os
 # Save metrics separately only when saving model
 latest_metrics_temp = {}
 
-def retrain_model(model_path='models/my_model.h5', epochs=10):
+def retrain_model(model_path='models/my_model.h5', epochs=2):
     global latest_metrics_temp
     df = load_data_from_db()
     X_processed, y, scaler = preprocess_data(df)
@@ -35,7 +35,7 @@ def retrain_model(model_path='models/my_model.h5', epochs=10):
         X_train, y_train,
         validation_split=0.2,
         epochs=epochs,
-        batch_size=16,
+        batch_size=32,
         callbacks=[early_stop],
         verbose=1
     )
