@@ -17,11 +17,11 @@ This project is a Flask-based web application that predicts the risk of heart di
 
 ## 🧠 Features
 
-- Predict heart disease risk using a trained deep learning model (Keras/TensorFlow)
+- Predict heart disease risk using a trained deep learning model 
 - Display prediction results with confidence scores
 - Retrain the model using updated data from a local SQLite database
 - Visualize confusion matrix, loss, and accuracy curves
-- Fetch dataset directly via an API endpoint
+- Fetch dataset from the database
 - Responsive front-end using HTML/CSS/JS and Bootstrap
 
 ---
