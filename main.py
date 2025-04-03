@@ -194,6 +194,6 @@ def evaluate_model():
 create_db_and_table()
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=5000)
 
 

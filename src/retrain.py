@@ -1,7 +1,6 @@
 # retrain.py
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from src.preprocessing import load_data_from_db, preprocess_data, apply_smote
@@ -16,12 +15,13 @@ import os
 
 # Save metrics separately only when saving model
 latest_metrics_temp = {}
+matplotlib.use('Agg')
 
-def retrain_model(model_path='models/my_model.h5', epochs=1):
+def retrain_model(model_path='models/my_model.h5', epochs=2):
     global latest_metrics_temp
     df = load_data_from_db()
     X_processed, y, scaler = preprocess_data(df)
-    X_resampled, y_resampled = X_processed, y
+    X_resampled, y_resampled = apply_smote(X_processed, y)
 
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
