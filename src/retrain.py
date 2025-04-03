@@ -1,45 +1,56 @@
 # retrain.py
+import os
+import json
 import pandas as pd
+import numpy as np
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import BinaryCrossentropy
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
+from tensorflow.keras.models import load_model as keras_load_model
+from sklearn.model_selection import train_test_split
+from src.preprocessing import load_data_from_db, preprocess_data
+
+# Optional: Only include matplotlib when needed
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.preprocessing import load_data_from_db, preprocess_data, apply_smote
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.losses import BinaryCrossentropy
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, classification_report
-from tensorflow.keras.models import load_model as keras_load_model
-import numpy as np
-import json
-import os
 
-# Save metrics separately only when saving model
+# To store latest evaluation
 latest_metrics_temp = {}
 
-def retrain_model(model_path='models/my_model.h5', epochs=2):
+def retrain_model(model_path='models/my_model.h5', epochs=1):
     global latest_metrics_temp
+
+    print("📊 Loading data from DB...")
     df = load_data_from_db()
-    X_processed, y, scaler = preprocess_data(df)
-    X_resampled, y_resampled = apply_smote(X_processed, y)
 
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
+    print("🧼 Preprocessing data...")
+    X_processed, y, _ = preprocess_data(df)
 
+    print("🔀 Splitting train/test sets...")
+    X_train, X_test, y_train, y_test = train_test_split(X_processed, y, test_size=0.2, random_state=42)
+
+    print("📦 Loading model...")
     model = keras_load_model(model_path)
+
+    print("⚙️ Compiling model...")
     model.compile(optimizer=Adam(learning_rate=0.001), loss=BinaryCrossentropy(), metrics=["accuracy"])
 
-    early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-
+    print("🚀 Training model...")
+    early_stop = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
     history = model.fit(
         X_train, y_train,
         validation_split=0.2,
         epochs=epochs,
-        batch_size=32,
+        batch_size=64,
         callbacks=[early_stop],
         verbose=1
     )
+    print("✅ Training complete.")
 
+    print("🧪 Evaluating...")
     y_pred_probs = model.predict(X_test).flatten()
     y_pred = (y_pred_probs > 0.5).astype(int)
 
@@ -59,6 +70,7 @@ def retrain_model(model_path='models/my_model.h5', epochs=2):
         }
     }
 
+    print("📊 Saving visualizations...")
     os.makedirs("static/img", exist_ok=True)
 
     # Confusion Matrix
@@ -73,8 +85,8 @@ def retrain_model(model_path='models/my_model.h5', epochs=2):
 
     # Loss Curve
     plt.figure(figsize=(6, 4))
-    plt.plot(history.history.get("loss", []), label='Training Loss')
-    plt.plot(history.history.get("val_loss", []), label='Validation Loss')
+    plt.plot(metrics["history"]["loss"], label='Training Loss')
+    plt.plot(metrics["history"]["val_loss"], label='Validation Loss')
     plt.title("Loss Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
@@ -84,15 +96,15 @@ def retrain_model(model_path='models/my_model.h5', epochs=2):
 
     # Accuracy Curve
     plt.figure(figsize=(6, 4))
-    plt.plot(history.history.get("accuracy", []), label='Training Accuracy')
-    plt.plot(history.history.get("val_accuracy", []), label='Validation Accuracy')
+    plt.plot(metrics["history"]["accuracy"], label='Training Accuracy')
+    plt.plot(metrics["history"]["val_accuracy"], label='Validation Accuracy')
     plt.title("Accuracy Curve")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
     plt.tight_layout()
     plt.savefig("static/img/accuracy_curve.png")
     plt.close()
-    
+
     latest_metrics_temp = {
         "accuracy": metrics["accuracy"],
         "f1_score": metrics["f1_score"],
