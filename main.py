@@ -8,7 +8,7 @@ from src.prediction import predict_heart_disease
 
 
 
-app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), '../templates'))
+app = Flask(__name__)
 
 DATABASE = 'heart_data.db'
 TABLE_NAME = 'heart_records'
